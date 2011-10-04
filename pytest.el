@@ -19,6 +19,12 @@
     (newline)
     (term-ansi-make-term "*pytest*" "/bin/sh" nil "-c" cmdline)))
 
+
+(defun pytest-arg-from-buffer-name (buffer-name)
+  (if (string-match "test_.*\\.py$" buffer-name)
+      buffer-name
+    (file-name-directory buffer-name)))
+
 (defun pytest-run-file ()
   (interactive)
   (let ((cmdline (concat "py.test " (buffer-file-name))))
@@ -27,8 +33,8 @@
 
 (defun pytest-run-again ()
   (interactive)
-  (if pytest-run-history
-      (let ((cmdline (car pytest-run-history)))
-        (pytest-run cmdline nil))
-    (message "No preceding pytest commands in history")))
-  
+  (if (not pytest-run-history)
+      (message "No preceding pytest commands in history")
+    (let ((cmdline (car pytest-run-history)),
+          (show-prompt (equal current-prefix-arg '(4))))
+      (pytest-run cmdline show-prompt))))  
