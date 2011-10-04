@@ -5,8 +5,11 @@
 (define-key ctl-x-map "t" ctl-x-t-map)
 (define-key ctl-x-t-map "t" 'pytest-run-again)
 (define-key ctl-x-t-map "f" 'pytest-run-file)
+(define-key ctl-x-t-map "m" 'pytest-run-method)
 
 (defvar pytest-run-history nil)
+
+(defconst pytest-def-re "def \\(test_[A-Za-z0-9]+\\)")
 
 (defun pytest-run (cmdline show-prompt)
   (let ((cmdline (if show-prompt
@@ -25,11 +28,24 @@
       buffer-name
     (file-name-directory buffer-name)))
 
+(defun pytest-current-function-name ()
+  (save-excursion
+    (if (search-backward-regexp pytest-def-re)
+        (match-string 1)
+      nil)))
+
 (defun pytest-run-file ()
   (interactive)
-  (let ((cmdline (concat "py.test " (buffer-file-name))))
+  (let ((cmdline (format "py.test %s" 
+                         (pytest-arg-from-buffer-name (buffer-file-name)))))
     (pytest-run cmdline t)))
 
+(defun pytest-run-method ()
+  (interactive)
+  (let ((cmdline (format "py.test %s -k %s" 
+                         (pytest-arg-from-buffer-name (buffer-file-name))
+                         (pytest-current-function-name))))
+    (pytest-run cmdline t)))
 
 (defun pytest-run-again ()
   (interactive)
