@@ -129,6 +129,6 @@ minibuffer before executing it.
   (interactive)
   (if (not pytest-run-history)
       (message "No preceding pytest commands in history")
-    (let ((cmdline (car pytest-run-history)),
+    (let ((cmdline (car pytest-run-history))
           (show-prompt (equal current-prefix-arg '(4))))
       (pytest-run cmdline show-prompt))))
