@@ -1,3 +1,51 @@
+;;; pytest.el --- integration with py.test
+;;; version: 0.1
+
+;; Copyright (C) 2011 Antonio Cuni
+;; Author: Antonio Cuni <anto.cuni@gmail.com>
+
+;; Description
+;; -----------
+;;
+;; This file contains some useful functions to run py.test from within emacs.
+;;
+;; If you are editing a test file (i.e., a file named test_*.py), you can run
+;; pytest-run-file to start py.test on that file.  You will be able to edit
+;; the actual py.test command to run in the minibuffer, so you can add all the
+;; flags you want (e.g., -s or --pdb).
+;;
+;; If you are editing a non-test file, pytest-run-file by default will start
+;; py.test on the directory where the file is in.
+;;
+;; If you are editing a test file and want to run the very specific test you
+;; are editing, you can run pytest-run-method, which will add the
+;; corresponding "-k" option to py.test.  You can still edit the command in
+;; the minibuffer before running it.
+;;
+;; If you want to re-run the last py.test command, you can use
+;; pytest-run-again.  By default, pytest-run-again does not ask you to edit
+;; the minibuffer, but you can still do it by prefixing pytest-run-again with
+;; C-u.
+;;
+;; The py.test process is run inside an ansi term provided by term.el: this
+;; means that if you use --pdb or explicitly have a pdb.set_trace() in your
+;; code, the (Pdb) prompt will "just work", including the colored output and
+;; the TAB-completion provided by e.g. pdb++.
+;;
+;; Default keybindings
+;; -------------------
+;;
+;; By default, the functions are bound to the "C-x t" map, which is unused in
+;; the default emacs settings.
+;;
+;; key             binding
+;; ---             -------
+;; C-x t f         pytest-run-file
+;; C-x t m         pytest-run-method
+;; C-x t t         pytest-run-again
+;; C-u C-x t t     pytest-run-again (after editing in the minibuffer)
+
+
 (require 'term)
 
 (defvar ctl-x-t-map (make-sparse-keymap)
@@ -44,12 +92,22 @@
       nil)))
 
 (defun pytest-run-file ()
+  "Run py.test on the current file or directory.
+
+If the name of the current file matches test_*.py, run py.test on
+it. Else, run py.test on the directory where the current file is in.
+"
   (interactive)
   (let ((cmdline (format "py.test %s" 
                          (pytest-arg-from-buffer-name (buffer-file-name)))))
     (pytest-run cmdline t)))
 
 (defun pytest-run-method ()
+  "Run py.test on the current test.
+
+If invokes py.test by adding \"-k funcname\", where funcname is the
+name of the test_* function you are editing.
+"
   (interactive)
   (let ((cmdline (format "py.test %s -k %s" 
                          (pytest-arg-from-buffer-name (buffer-file-name))
@@ -57,9 +115,14 @@
     (pytest-run cmdline t)))
 
 (defun pytest-run-again ()
+  "Re-run the last py.test command.
+
+If prefixed by C-u, it lets you to edit the command in the
+minibuffer before executing it.
+"
   (interactive)
   (if (not pytest-run-history)
       (message "No preceding pytest commands in history")
     (let ((cmdline (car pytest-run-history)),
           (show-prompt (equal current-prefix-arg '(4))))
-      (pytest-run cmdline show-prompt))))  
+      (pytest-run cmdline show-prompt))))
