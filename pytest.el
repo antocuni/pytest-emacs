@@ -63,7 +63,8 @@
   (term-sentinel proc msg)
   (when (memq (process-status proc) '(signal exit))
     (setq buffer-read-only t)
-    (local-set-key "q" 'quit-window)))
+    (local-set-key "q" 'quit-window)
+    (local-set-key "g" 'pytest-run-again)))
 
 (defun pytest-run (cmdline show-prompt)
   (let ((cmdline (if show-prompt
@@ -71,7 +72,8 @@
                                          'pytest-run-history)
                    cmdline))
         (buffer (get-buffer-create "*pytest*")))
-    (switch-to-buffer-other-window buffer)
+    (if (not (equal (current-buffer) buffer))
+        (switch-to-buffer-other-window buffer))
     (setq buffer-read-only nil)
     (erase-buffer)
     (insert cmdline)
