@@ -72,6 +72,8 @@
                    cmdline))
         (buffer (get-buffer-create "*pytest*")))
     (switch-to-buffer-other-window buffer)
+    (setq buffer-read-only nil)
+    (erase-buffer)
     (insert cmdline)
     (newline)
     (term-ansi-make-term "*pytest*" "/bin/sh" nil "-c" cmdline)
