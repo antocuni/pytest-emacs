@@ -84,10 +84,12 @@
       (set-process-sentinel proc 'pytest-term-sentinel))))
 
 
-(defun pytest-arg-from-buffer-name (buffer-name)
-  (if (string-match "test_.*\\.py$" buffer-name)
-      buffer-name
-    (file-name-directory buffer-name)))
+(defun pytest-arg-from-path (path)
+  (let ((filename (file-name-nondirectory path)))
+    (if (or (string-match "test_.*\\.py$" filename)
+            (string-match ".*_test\\.py$" filename))
+        path
+      (file-name-directory path))))
 
 (defun pytest-current-function-name ()
   (save-excursion
@@ -103,7 +105,7 @@ it. Else, run py.test on the directory where the current file is in.
 "
   (interactive)
   (let ((cmdline (format "py.test %s" 
-                         (pytest-arg-from-buffer-name (buffer-file-name)))))
+                         (pytest-arg-from-path (buffer-file-name)))))
     (pytest-run cmdline t)))
 
 (defun pytest-run-method ()
@@ -114,7 +116,7 @@ name of the test_* function you are editing.
 "
   (interactive)
   (let ((cmdline (format "py.test %s -k %s" 
-                         (pytest-arg-from-buffer-name (buffer-file-name))
+                         (pytest-arg-from-path (buffer-file-name))
                          (pytest-current-function-name))))
     (pytest-run cmdline t)))
 
