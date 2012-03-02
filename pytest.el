@@ -79,6 +79,7 @@
     (insert cmdline)
     (newline)
     (term-ansi-make-term "*pytest*" "/bin/sh" nil "-c" cmdline)
+    (term-char-mode)
     (let ((proc (get-buffer-process buffer)))
       ; override the default sentinel set by term-ansi-make-term
       (set-process-sentinel proc 'pytest-term-sentinel))))
