@@ -104,7 +104,7 @@ If the name of the current file matches test_*.py, run py.test on
 it. Else, run py.test on the directory where the current file is in.
 "
   (interactive)
-  (let ((cmdline (format "py.test %s" 
+  (let ((cmdline (format "cd; py.test %s "
                          (pytest-arg-from-path (buffer-file-name)))))
     (pytest-run cmdline t)))
 
@@ -115,7 +115,7 @@ If invokes py.test by adding \"-k funcname\", where funcname is the
 name of the test_* function you are editing.
 "
   (interactive)
-  (let ((cmdline (format "py.test %s -k %s" 
+  (let ((cmdline (format "cd; py.test %s -k %s "
                          (pytest-arg-from-path (buffer-file-name))
                          (pytest-current-function-name))))
     (pytest-run cmdline t)))
