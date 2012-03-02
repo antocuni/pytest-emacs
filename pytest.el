@@ -57,7 +57,7 @@
 
 (defvar pytest-run-history nil)
 
-(defconst pytest-def-re "def \\(test_[A-Za-z0-9]+\\)")
+(defconst pytest-def-re "def \\(test_[A-Za-z0-9_]+\\)")
 
 (defun pytest-term-sentinel (proc msg)
   (term-sentinel proc msg)
