@@ -62,9 +62,11 @@
 (defun pytest-term-sentinel (proc msg)
   (term-sentinel proc msg)
   (when (memq (process-status proc) '(signal exit))
-    (setq buffer-read-only t)
-    (local-set-key "q" 'quit-window)
-    (local-set-key "g" 'pytest-run-again)))
+    (save-excursion
+      (set-buffer "*pytest*")
+      (setq buffer-read-only t)
+      (local-set-key "q" 'quit-window)
+      (local-set-key "g" 'pytest-run-again))))
 
 (defun pytest-run (cmdline show-prompt)
   (let ((cmdline (if show-prompt
