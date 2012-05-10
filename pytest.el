@@ -76,6 +76,8 @@
         (buffer (get-buffer-create "*pytest*")))
     (if (not (equal (current-buffer) buffer))
         (switch-to-buffer-other-window buffer))
+    (if (get-buffer-process (current-buffer))
+        (term-kill-subjob))
     (setq buffer-read-only nil)
     (erase-buffer)
     (insert cmdline)
